@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -15,7 +15,7 @@ namespace patterns
 		static void Main(string[] args)
 		{
 			//Фасад (Facade)_________________________________________
-			Console.WriteLine("\n\nФасад (Facade)\n");
+			//Console.WriteLine("\n\nФасад (Facade)\n");
 			TextEditor textEditor = new TextEditor();
 			Compiller compiller = new Compiller();
 			CLR clr = new CLR();
@@ -23,42 +23,42 @@ namespace patterns
 			VisualStudioFacade ide = new VisualStudioFacade(textEditor, compiller, clr);
 
 			Programmer programmer = new Programmer();
-			programmer.CreateApplication(ide);
 
-			
-			//Фасад (Facade)_________________________________________
-
-			//Хранитель (Memento)____________________________________
-			Console.WriteLine("\n\nХранитель (Memento)\n");
-			Hero hero = new Hero();
-			hero.Shoot(); // делаем выстрел, осталось 9 патронов
-			GameHistory game = new GameHistory();
-
-			game.History.Push(hero.SaveState()); // сохраняем игру
-
-			hero.Shoot(); //делаем выстрел, осталось 8 патронов
-
-			hero.RestoreState(game.History.Pop());
-
-			hero.Shoot(); //делаем выстрел, осталось 8 патронов
-
-		
-			//Хранитель (Memento)____________________________________
-
-			//Прототип (Prototype)____________________________________
-			Console.WriteLine("\n\nПрототип (Prototype)\n");
 			IFigure figure = new Rectangle(30, 40);
 			IFigure clonedFigure = figure.Clone();
 			figure.GetInfo();
 			clonedFigure.GetInfo();
 
-			figure = new Circle(30);
-			clonedFigure = figure.Clone();
-			figure.GetInfo();
-			clonedFigure.GetInfo();
+			//Фасад (Facade)_________________________________________
+
+			//Хранитель (Memento)____________________________________
+			//Console.WriteLine("\n\nХранитель (Memento)\n");
+			Application_ Appl = new Application_();
+			Appl.Programming(); // делаем выстрел, осталось 9 строк
+			Application_History App_hist = new Application_History();
+
+
+
+			Appl.Programming(); //пишем код, осталось 8 строк
+			Appl.Programming();
+			Appl.Programming();
+			App_hist.History.Push(Appl.SaveState()); // сохраняем код
+			Appl.RestoreState(App_hist.History.Pop());
+
+			programmer.CreateApplication(ide);
+			//Appl.Programming(); //пишем код, осталось 8 строк
+
+
+			//Хранитель (Memento)____________________________________
+
+			//Прототип (Prototype)____________________________________
+			//Console.WriteLine("\n\nПрототип (Prototype)\n");
+
+
+
 
 			Console.Read();
-			//Прототип (Prototype)____________________________________
+			//Прототипototype)____________________________________
 		}
 
 	}
@@ -132,56 +132,60 @@ namespace patterns
 
 	//Хранитель (Memento)____________________________________
 	// Originator
-	class Hero
+	class Application_
 	{
-		private int patrons = 10; // кол-во патронов
-		private int lives = 5; // кол-во жизней
+		private int lines = 10; // кол-во строк
+		private int hours = 1; // кол-во жизней
 
-		public void Shoot()
+		public void Programming()
 		{
-			if (patrons > 0)
+			if (lines % 2 == 0)
 			{
-				patrons--;
-				Console.WriteLine("Производим выстрел. Осталось {0} патронов", patrons);
+				hours++;
+			}
+			if (lines > 0)
+			{
+				lines--;
+				Console.WriteLine("Пишем код. Осталось {0} строк", lines);
 			}
 			else
-				Console.WriteLine("Патронов больше нет");
+				Console.WriteLine("Программа написана");
 		}
 		// сохранение состояния
-		public HeroMemento SaveState()
+		public AppMemento SaveState()
 		{
-			Console.WriteLine("Сохранение игры. Параметры: {0} патронов, {1} жизней", patrons, lives);
-			return new HeroMemento(patrons, lives);
+			Console.WriteLine("Сохранение программы. Параметры: {0} строк, {1} часов", lines, hours);
+			return new AppMemento(lines, hours);
 		}
 
 		// восстановление состояния
-		public void RestoreState(HeroMemento memento)
+		public void RestoreState(AppMemento memento)
 		{
-			this.patrons = memento.Patrons;
-			this.lives = memento.Lives;
-			Console.WriteLine("Восстановление игры. Параметры: {0} патронов, {1} жизней", patrons, lives);
+			this.lines = memento.Lines;
+			this.hours = memento.Hours;
+			Console.WriteLine("Восстановление программы. Параметры: {0} строк, {1} часов", lines, hours);
 		}
 	}
 	// Memento
-	class HeroMemento
+	class AppMemento
 	{
-		public int Patrons { get; private set; }
-		public int Lives { get; private set; }
+		public int Lines { get; private set; }
+		public int Hours { get; private set; }
 
-		public HeroMemento(int patrons, int lives)
+		public AppMemento(int lines, int hours)
 		{
-			this.Patrons = patrons;
-			this.Lives = lives;
+			this.Lines = lines;
+			this.Hours = hours;
 		}
 	}
 
 	// Caretaker
-	class GameHistory
+	class Application_History
 	{
-		public Stack<HeroMemento> History { get; private set; }
-		public GameHistory()
+		public Stack<AppMemento> History { get; private set; }
+		public Application_History()
 		{
-			History = new Stack<HeroMemento>();
+			History = new Stack<AppMemento>();
 		}
 	}
 	//Хранитель (Memento)____________________________________
@@ -209,26 +213,10 @@ namespace patterns
 		}
 		public void GetInfo()
 		{
-			Console.WriteLine("Прямоугольник длиной {0} и шириной {1}", height, width);
+			Console.WriteLine("Форма длиной {0} и шириной {1}", height, width);
 		}
 	}
 
-	class Circle : IFigure
-	{
-		int radius;
-		public Circle(int r)
-		{
-			radius = r;
-		}
 
-		public IFigure Clone()
-		{
-			return new Circle(this.radius);
-		}
-		public void GetInfo()
-		{
-			Console.WriteLine("Круг радиусом {0}", radius);
-		}
-	}
 	//Прототип (Prototype)____________________________________
 }
